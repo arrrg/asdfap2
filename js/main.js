@@ -30,29 +30,23 @@ $(document).ready(function() {
 
         // respond to clicks on the login and logout links
         document.getElementById('auth-loginlink').addEventListener('click', function(){
-            FB.login(function(response) {
-              if (response.authResponse) {
-                var accessToken = response.authResponse.accessToken;
-                FB.api('/me', function(response) {
-                  var user = new StackMob.User({ username: response.email });
-                  user.createUserWithFacebook(accessToken);
-                });
-              } else {
-                console.log('User cancelled login or did not fully authorize.');
-              }
-            }, {scope: 'email, user_likes'});
-          }
+          FB.login(function(response) {
+            if (response.authResponse) {
+              var accessToken = response.authResponse.accessToken;
+              FB.api('/me', function(response) {
+                var user = new StackMob.User({ username: response.email });
+                user.createUserWithFacebook(accessToken);
+              });
+            } else {
+              console.log('User cancelled login or did not fully authorize.');
+            }
+          }, {scope: 'email, user_likes'});
+        }
         );
         document.getElementById('auth-logoutlink').addEventListener('click', function(){
           FB.logout();
         });
-
-
-
-
-
-
-});
+      });
 
 var getLikes = function() {
 	FB.api('/me/likes', function(response) {
@@ -61,19 +55,33 @@ var getLikes = function() {
 
 			if (isOwnable(item))  {
 				var newDiv = $('<div/>', {
-   					 html: item.name,
-   					});
-				$('#items').append(newDiv);
-			}
-		}
-		
+         html: item.name,
+       });
+        newDiv.click(function() {
+          //add to the user's "ownage"
+          FB.api('/me/asdfap-test:own', 'post', { object:item.id }, function(response) {
+            alert("You owned "+item.id);
+          });
 
-	});
+        });
+        $('#items').append(newDiv);
+      }
+
+
+    }
+  });
+}
+
+var postOwn = function(itemid) {
+  FB.api('/me/asdfap-test:own', 'post', { object:itemid }, function(response) {
+    alert("You owned "+itemid);
+
+  });
 }
 
 var isOwnable = function(fbObject) {
-	if (fbObject.category == "Games/toys" || fbObject.category == "Book") {
-		return true;
-	}
-	else return false;
+ if (fbObject.category == "Games/toys" || fbObject.category == "Book") {
+  return true;
+}
+else return false;
 }
